@@ -9,6 +9,8 @@
 
     <ItemGroup>
       <PackageReference Include="Autofac" Version="6.5.0" />
+      <PackageReference Include="Vostok.Logging.Console" Version="1.0.9" />
+      <PackageReference Include="Vostok.Logging.File" Version="1.0.22" />
     </ItemGroup>
 
 </Project>
