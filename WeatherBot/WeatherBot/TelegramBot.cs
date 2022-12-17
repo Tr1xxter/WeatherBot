@@ -5,6 +5,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Vostok.Logging.Abstractions;
 using WeatherBot.Configuration;
+using TelegramBotClient = WeatherBot.Domain.Telegram.Clients.TelegramBotClient;
 
 namespace WeatherBot
 {
@@ -12,13 +13,16 @@ namespace WeatherBot
     {
         private readonly ILog _log;
         private readonly SecretsConfig _secretsConfig;
+        private readonly TelegramBotClient _telegramBotClient;
 
         public TelegramBot(
             ILog log,
-            SecretsConfig secretsConfig)
+            SecretsConfig secretsConfig,
+            TelegramBotClient telegramBotClient)
         {
             _log = log;
             _secretsConfig = secretsConfig;
+            _telegramBotClient = telegramBotClient;
         }
 
         public async Task Start()
@@ -40,7 +44,12 @@ namespace WeatherBot
                 ThrowPendingUpdates = true,
             };
 
-            _log.Info("Start");
+            await _telegramBotClient.Start(
+                botToken,
+                receiverOptions,
+                HandleReceivedUpdate,
+                HandleApiError,
+                cancellationTokenSource.Token);
 
 #if DEBUG
             await Task.Delay(-1, cancellationTokenSource.Token);
@@ -80,7 +89,7 @@ namespace WeatherBot
             var errorMessage = exception switch
             {
                 ApiRequestException apiRequestException
-                    => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
+                    => $"Telegram API Error: [{apiRequestException.ErrorCode}] {apiRequestException.Message}",
                 _ => exception.Message,
             };
 

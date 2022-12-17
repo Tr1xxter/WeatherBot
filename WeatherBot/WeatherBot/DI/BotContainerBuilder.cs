@@ -7,6 +7,7 @@ using Vostok.Logging.Console;
 using Vostok.Logging.File;
 using Vostok.Logging.File.Configuration;
 using WeatherBot.Configuration;
+using WeatherBot.Domain.Telegram.Clients;
 
 namespace WeatherBot.DI;
 
@@ -46,6 +47,7 @@ public static class BotContainerBuilder
             .Get<SecretsConfig>());
 
         containerBuilder.RegisterType<TelegramBot>().SingleInstance();
+        containerBuilder.RegisterType<TelegramBotClient>().SingleInstance();
 
         return containerBuilder.Build();
     }
