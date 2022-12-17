@@ -1,8 +1,12 @@
 ﻿using Autofac;
+using Vostok.Configuration;
+using Vostok.Configuration.Abstractions;
+using Vostok.Configuration.Sources.Json;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Console;
 using Vostok.Logging.File;
 using Vostok.Logging.File.Configuration;
+using WeatherBot.Configuration;
 
 namespace WeatherBot.DI;
 
@@ -28,6 +32,20 @@ public static class BotContainerBuilder
             var fileLog = new FileLog(fileLogSettings);
             return new CompositeLog(consoleLog, fileLog);
         }).SingleInstance();
+
+        containerBuilder
+            .Register<IConfigurationProvider>(cc =>
+            {
+                var provider = new ConfigurationProvider();
+                provider.SetupSourceFor<SecretsConfig>(new JsonFileSource("Settings/secrets.json"));
+                return provider;
+            }).Named<IConfigurationProvider>(ConfigurationScopes.BotSettingsScope);
+
+        containerBuilder.Register(cc => cc
+            .ResolveNamed<IConfigurationProvider>(ConfigurationScopes.BotSettingsScope)
+            .Get<SecretsConfig>());
+
+        containerBuilder.RegisterType<TelegramBot>().SingleInstance();
 
         return containerBuilder.Build();
     }
