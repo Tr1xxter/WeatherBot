@@ -11,6 +11,7 @@ using WeatherBot.Configuration;
 using WeatherBot.Domain.Telegram.Clients;
 using WeatherBot.Domain.Telegram.Commands.Managers;
 using WeatherBot.Domain.Telegram.Commands.PrivateCommands;
+using WeatherBot.Domain.Weather;
 
 namespace WeatherBot.DI;
 
@@ -37,6 +38,7 @@ public static class BotContainerBuilder
         containerBuilder.RegisterAssemblyTypes(currentAssembly).As<IBotCommand>();
 
         containerBuilder.RegisterType<PrivateCommandManager>();
+        containerBuilder.RegisterType<WeatherService>();
 
         containerBuilder.RegisterType<TelegramBot>().SingleInstance();
         containerBuilder.RegisterType<TelegramBotClient>().SingleInstance();
