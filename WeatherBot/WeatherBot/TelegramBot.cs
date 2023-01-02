@@ -5,6 +5,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Vostok.Logging.Abstractions;
 using WeatherBot.Configuration;
+using WeatherBot.Domain.Telegram.Commands.Managers;
 using TelegramBotClient = WeatherBot.Domain.Telegram.Clients.TelegramBotClient;
 
 namespace WeatherBot
@@ -14,15 +15,18 @@ namespace WeatherBot
         private readonly ILog _log;
         private readonly SecretsConfig _secretsConfig;
         private readonly TelegramBotClient _telegramBotClient;
+        private readonly PrivateCommandManager _privateCommandManager;
 
         public TelegramBot(
             ILog log,
             SecretsConfig secretsConfig,
-            TelegramBotClient telegramBotClient)
+            TelegramBotClient telegramBotClient,
+            PrivateCommandManager privateCommandManager)
         {
             _log = log;
             _secretsConfig = secretsConfig;
             _telegramBotClient = telegramBotClient;
+            _privateCommandManager = privateCommandManager;
         }
 
         public async Task Start()
@@ -82,6 +86,8 @@ namespace WeatherBot
                 return;
 
             _log.Info($"Бот [@{bot.Username}] получил сообщение [{messageText}] в чате с [{message.From.Username}].");
+
+            await _privateCommandManager.TryPerformCommand(message);
         }
 
         private Task HandleApiError(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)

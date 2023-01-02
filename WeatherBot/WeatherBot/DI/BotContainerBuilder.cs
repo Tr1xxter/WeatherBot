@@ -8,6 +8,8 @@ using Vostok.Logging.File;
 using Vostok.Logging.File.Configuration;
 using WeatherBot.Configuration;
 using WeatherBot.Domain.Telegram.Clients;
+using WeatherBot.Domain.Telegram.Commands.Managers;
+using WeatherBot.Domain.Telegram.Commands.PrivateCommands;
 
 namespace WeatherBot.DI;
 
@@ -16,6 +18,25 @@ public static class BotContainerBuilder
     public static IContainer Build()
     {
         var containerBuilder = new ContainerBuilder();
+
+        containerBuilder
+            .Register<IConfigurationProvider>(cc =>
+            {
+                var provider = new ConfigurationProvider();
+                provider.SetupSourceFor<SecretsConfig>(new JsonFileSource("Settings/secrets.json"));
+                return provider;
+            }).Named<IConfigurationProvider>(ConfigurationScopes.BotSettingsScope);
+
+        containerBuilder.Register(cc => cc
+            .ResolveNamed<IConfigurationProvider>(ConfigurationScopes.BotSettingsScope)
+            .Get<SecretsConfig>());
+
+        containerBuilder.Register<IBotCommand, StartCommand>();
+
+        containerBuilder.RegisterType<PrivateCommandManager>();
+
+        containerBuilder.RegisterType<TelegramBot>().SingleInstance();
+        containerBuilder.RegisterType<TelegramBotClient>().SingleInstance();
 
         containerBuilder.Register<ILog>(cc =>
         {
@@ -33,21 +54,6 @@ public static class BotContainerBuilder
             var fileLog = new FileLog(fileLogSettings);
             return new CompositeLog(consoleLog, fileLog);
         }).SingleInstance();
-
-        containerBuilder
-            .Register<IConfigurationProvider>(cc =>
-            {
-                var provider = new ConfigurationProvider();
-                provider.SetupSourceFor<SecretsConfig>(new JsonFileSource("Settings/secrets.json"));
-                return provider;
-            }).Named<IConfigurationProvider>(ConfigurationScopes.BotSettingsScope);
-
-        containerBuilder.Register(cc => cc
-            .ResolveNamed<IConfigurationProvider>(ConfigurationScopes.BotSettingsScope)
-            .Get<SecretsConfig>());
-
-        containerBuilder.RegisterType<TelegramBot>().SingleInstance();
-        containerBuilder.RegisterType<TelegramBotClient>().SingleInstance();
 
         return containerBuilder.Build();
     }

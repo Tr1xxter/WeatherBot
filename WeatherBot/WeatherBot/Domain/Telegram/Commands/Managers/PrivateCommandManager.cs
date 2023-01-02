@@ -8,7 +8,7 @@ using Vostok.Logging.Abstractions;
 using WeatherBot.Domain.Telegram.Clients;
 using WeatherBot.Domain.Telegram.Commands.PrivateCommands;
 
-namespace TelegramBot.Commands.OriginalTelegramBot.Managers
+namespace WeatherBot.Domain.Telegram.Commands.Managers
 {
     public class PrivateCommandManager
     {
