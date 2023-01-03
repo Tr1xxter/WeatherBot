@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Telegram.Bot.Types;
+﻿using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using WeatherBot.Domain.Telegram.Clients;
 using WeatherBot.Domain.Telegram.Helpers;
