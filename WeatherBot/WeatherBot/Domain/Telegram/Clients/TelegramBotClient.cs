@@ -111,12 +111,12 @@ namespace WeatherBot.Domain.Telegram.Clients
             }
         }
 
-        public async Task<bool?> SetCommands(IEnumerable<BotCommand> botCommands)
+        public async Task<bool> SetCommands(IEnumerable<BotCommand> botCommands)
         {
             if (_telegramBotClient == null)
             {
                 _log.Error(ClientIsNullError);
-                return null;
+                return false;
             }
 
             try
@@ -126,7 +126,7 @@ namespace WeatherBot.Domain.Telegram.Clients
             catch (Exception e)
             {
                 _log.Error($"Не удалось задать меню команд. [{e.Message}]");
-                return null;
+                return false;
             }
 
             return true;

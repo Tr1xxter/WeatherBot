@@ -6,6 +6,8 @@ using Telegram.Bot.Types.Enums;
 using Vostok.Logging.Abstractions;
 using WeatherBot.Configuration;
 using WeatherBot.Domain.Telegram.Commands.Managers;
+using WeatherBot.Domain.Telegram.Commands.PrivateCommands;
+using WeatherBot.Domain.Telegram.Helpers;
 using TelegramBotClient = WeatherBot.Domain.Telegram.Clients.TelegramBotClient;
 
 namespace WeatherBot
@@ -16,17 +18,20 @@ namespace WeatherBot
         private readonly SecretsConfig _secretsConfig;
         private readonly TelegramBotClient _telegramBotClient;
         private readonly PrivateCommandManager _privateCommandManager;
+        private readonly IEnumerable<IBotCommand> _botCommands;
 
         public TelegramBot(
             ILog log,
             SecretsConfig secretsConfig,
             TelegramBotClient telegramBotClient,
-            PrivateCommandManager privateCommandManager)
+            PrivateCommandManager privateCommandManager,
+            IEnumerable<IBotCommand> botCommands)
         {
             _log = log;
             _secretsConfig = secretsConfig;
             _telegramBotClient = telegramBotClient;
             _privateCommandManager = privateCommandManager;
+            _botCommands = botCommands;
         }
 
         public async Task Start()
@@ -55,9 +60,42 @@ namespace WeatherBot
                 HandleApiError,
                 cancellationTokenSource.Token);
 
+            await UpdateBotCommandsMenu();
+
 #if DEBUG
             await Task.Delay(-1, cancellationTokenSource.Token);
 #endif
+        }
+
+        private async Task UpdateBotCommandsMenu()
+        {
+            var newBotCommands = _botCommands
+                .Where(bc => bc.Name != TelegramTextHelper.Commands.Start)
+                .Select(bc =>
+                    new BotCommand
+                    {
+                        Command = bc.Name.Replace("/", ""),
+                        Description = bc.Help
+                    })
+                .OrderBy(bc => bc.Command, StringComparer.InvariantCultureIgnoreCase)
+                .ToList();
+
+            var existingCommands = await _telegramBotClient.GetCommands();
+
+            if (existingCommands != null && newBotCommands.SequenceEqual(existingCommands, new BotCommandComparer()))
+                return;
+
+            var areCommandsSet = await _telegramBotClient.SetCommands(newBotCommands);
+
+            if (!areCommandsSet)
+                return;
+
+            var currentBot = await _telegramBotClient.GetMe();
+
+            if (currentBot == null)
+                return;
+
+            _log.Info($"Меню команд обновлено для бота [@{currentBot.Username}].");
         }
 
         private async Task HandleReceivedUpdate(
@@ -102,5 +140,22 @@ namespace WeatherBot
             _log.Error(errorMessage);
             return Task.CompletedTask;
         }
+    }
+
+    internal class BotCommandComparer : IEqualityComparer<BotCommand>
+    {
+        public bool Equals(BotCommand? firstCommand, BotCommand? secondCommand)
+        {
+            if (ReferenceEquals(firstCommand, secondCommand))
+                return true;
+
+            if (firstCommand == null || secondCommand == null)
+                return false;
+
+            return firstCommand.Command == secondCommand.Command && firstCommand.Description == secondCommand.Description;
+        }
+
+        public int GetHashCode(BotCommand obj)
+            => HashCode.Combine(obj.Command, obj.Description);
     }
 }
