@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using WeatherBot.DI;
 using WeatherBot.Domain.Weather;
+using WeatherBot.Domain.Weather.Models;
 
 namespace WeatherBot;
 
@@ -10,7 +11,7 @@ public static class Program
     {
         var container = BotContainerBuilder.Build();
 
-        container.Resolve<WeatherService>().GetWeather();
+        container.Resolve<WeatherService>().MethodABD();
 
         await container.Resolve<TelegramBot>().Start();
     }
