@@ -11,7 +11,7 @@ public static class Program
     {
         var container = BotContainerBuilder.Build();
 
-        container.Resolve<WeatherService>().MethodABD();
+        container.Resolve<WeatherService>().GetCityWeather();
 
         await container.Resolve<TelegramBot>().Start();
     }
