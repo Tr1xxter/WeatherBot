@@ -20,7 +20,7 @@ namespace WeatherBot.Domain.Telegram.Commands.PrivateCommands
 
         public async Task ExecuteAsync(Message message, string[] args)
         {
-            const string text = "Здравствуйте! Я телеграм бот, позволяющий получить актаульную информацию" +
+            const string text = "Здравствуйте! Я телеграм бот, позволяющий получить актуальную информацию" +
                                 " о погоде в Екатеринбурге.";
 
             var chatId = message.Chat.Id;

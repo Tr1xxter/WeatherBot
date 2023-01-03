@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System.Reflection;
+using Autofac;
 using Vostok.Configuration;
 using Vostok.Configuration.Abstractions;
 using Vostok.Configuration.Sources.Json;
@@ -31,7 +32,9 @@ public static class BotContainerBuilder
             .ResolveNamed<IConfigurationProvider>(ConfigurationScopes.BotSettingsScope)
             .Get<SecretsConfig>());
 
-        containerBuilder.Register<IBotCommand, StartCommand>();
+        var currentAssembly = Assembly.GetExecutingAssembly();
+
+        containerBuilder.RegisterAssemblyTypes(currentAssembly).As<IBotCommand>();
 
         containerBuilder.RegisterType<PrivateCommandManager>();
 
