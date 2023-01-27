@@ -16,8 +16,6 @@ public class WebHelper
             response = streamReader.ReadToEnd();
         }
 
-        var deserializedResponse = JsonConvert.DeserializeObject<T>(response);
-
-        return deserializedResponse;
+        return JsonConvert.DeserializeObject<T>(response);
     }
 }

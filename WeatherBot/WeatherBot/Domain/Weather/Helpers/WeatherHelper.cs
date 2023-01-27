@@ -9,11 +9,8 @@ public static class WeatherHelper
         public static string Russia = "ISO 3166-2:RU";
     }
 
-    public static string GetWeatherApiResponseString(WeatherApiResponse? weatherApiResponse)
+    public static string GetWeatherApiResponseString(WeatherApiResponse weatherApiResponse)
     {
-        if (weatherApiResponse == null)
-            return string.Empty;
-
         var cityName = weatherApiResponse.Name;
 
         // Апи по какой-то причине определяет название Екатеринбурга и ещё некоторых городов неправильно

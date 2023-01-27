@@ -31,6 +31,13 @@ public class LocationManager
         }
 
         var cityWeather = _weatherService.GetCityWeatherByCoordinates((float) location.Latitude, (float) location.Longitude);
+
+        if (cityWeather == null)
+        {
+            _log.Error($"Не удалось получить погоду по координатам ({location.Latitude}, {location.Longitude}).");
+            return false;
+        }
+
         var text = WeatherHelper.GetWeatherApiResponseString(cityWeather);
 
         await _telegramBotClient.SendTextMessage(

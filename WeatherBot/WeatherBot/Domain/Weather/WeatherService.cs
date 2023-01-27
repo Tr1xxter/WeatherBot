@@ -20,19 +20,20 @@ public class WeatherService
     {
         var coordinatesUrl = GetCoordinatesUrl(cityName);
         var coordinatesRequest = WebHelper.MakeRequest<List<CityCoordinates>>(coordinatesUrl);
-        if (coordinatesRequest.Count == default)
+
+        if (coordinatesRequest?.Count == default)
         {
             _log.Error("Не удалось получить координаты города");
             return null;
         }
 
-        var cityCoordinates = (coordinatesRequest).First();
+        var cityCoordinates = coordinatesRequest.First();
         var weatherUrl = GetWeatherUrl(cityCoordinates.Latitude, cityCoordinates.Longitude);
         return WebHelper.MakeRequest<WeatherApiResponse>(weatherUrl);
     }
 
-    public WeatherApiResponse GetCityWeatherByCoordinates(float latitude, float longitude)
-        => MakeRequest<WeatherApiResponse>(GetWeatherUrl(latitude, longitude));
+    public WeatherApiResponse? GetCityWeatherByCoordinates(float latitude, float longitude)
+        => WebHelper.MakeRequest<WeatherApiResponse>(GetWeatherUrl(latitude, longitude));
 
     private string GetCoordinatesUrl(string cityName, int limit = 1)
         => $"http://api.openweathermap.org/geo/1.0/direct?q={cityName}," +
