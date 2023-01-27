@@ -1,11 +1,14 @@
-﻿using System.Security.Cryptography;
+﻿using Newtonsoft.Json;
 
 namespace WeatherBot.Domain.Weather.Models;
 
 public class CityCoordinates
 {
-    public float Lat { get; set; }
-    public float Lon { get; set; }
+    [JsonProperty("lat", NullValueHandling = NullValueHandling.Ignore)]
+    public float Latitude { get; set; }
+
+    [JsonProperty("lon", NullValueHandling = NullValueHandling.Ignore)]
+    public float Longitude { get; set; }
 
     public string Name { get; set; }
 }

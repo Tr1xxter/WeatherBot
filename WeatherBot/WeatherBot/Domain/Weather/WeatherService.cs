@@ -1,6 +1,4 @@
-﻿using System.Net;
-using System.Runtime.InteropServices.Marshalling;
-using Newtonsoft.Json;
+﻿using Vostok.Logging.Abstractions;
 using WeatherBot.Configuration;
 using WeatherBot.Domain.Weather.Helpers;
 using WeatherBot.Domain.Weather.Models;
@@ -10,35 +8,34 @@ namespace WeatherBot.Domain.Weather;
 public class WeatherService
 {
     private readonly SecretsConfig _secretsConfig;
+    private readonly ILog _log;
 
-    public WeatherService(SecretsConfig secretsConfig)
+    public WeatherService(SecretsConfig secretsConfig, ILog log)
     {
         _secretsConfig = secretsConfig;
-    }
-    
-    public WeatherApiResponse GetCityWeather(string cityName = "Yekaterinburg")
-    {
-        var cityCoordinates = MakeRequest<List<CityCoordinates>>(GetCoordinatesUrl(cityName)).First();
-        return MakeRequest<WeatherApiResponse>(GetWeatherUrl(cityCoordinates.Lat, cityCoordinates.Lon));
+        _log = log;
     }
 
-    private string GetCoordinatesUrl(string cityName, int limit = 1) => $"http://api.openweathermap.org/geo/1.0/direct?q={cityName},{WeatherHelper.CountryCode.Russia}&limit={limit}&appid={_secretsConfig.WeatherApiKey}";
-
-    private string GetWeatherUrl(float lat, float lon) => $"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={_secretsConfig.WeatherApiKey}&lang=ru&units=metric";
-
-    private T MakeRequest<T>(string url)
+    public WeatherApiResponse? GetCityWeather(string cityName = "Yekaterinburg")
     {
-        var httpWebRequest = (HttpWebRequest) WebRequest.Create(url);
-        var httpWebResponse = (HttpWebResponse) httpWebRequest.GetResponse();
-
-        string response;
-        using (var streamReader = new StreamReader(httpWebResponse.GetResponseStream()))
+        var coordinatesUrl = GetCoordinatesUrl(cityName);
+        var coordinatesRequest = WebHelper.MakeRequest<List<CityCoordinates>>(coordinatesUrl);
+        if (coordinatesRequest.Count == default)
         {
-            response = streamReader.ReadToEnd();
+            _log.Error("Не удалось получить координаты города");
+            return null;
         }
 
-        var deserializedResponse = JsonConvert.DeserializeObject<T>(response);
-
-        return deserializedResponse;
+        var cityCoordinates = (coordinatesRequest).First();
+        var weatherUrl = GetWeatherUrl(cityCoordinates.Latitude, cityCoordinates.Longitude);
+        return WebHelper.MakeRequest<WeatherApiResponse>(weatherUrl);
     }
+
+    private string GetCoordinatesUrl(string cityName, int limit = 1)
+        => $"http://api.openweathermap.org/geo/1.0/direct?q={cityName}," +
+           $"{WeatherHelper.CountryCode.Russia}&limit={limit}&appid={_secretsConfig.WeatherApiKey}";
+
+    private string GetWeatherUrl(float latitude, float longitude)
+        => $"https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}" +
+           $"&appid={_secretsConfig.WeatherApiKey}&lang=ru&units=metric";
 }
