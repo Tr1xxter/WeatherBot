@@ -1,21 +1,30 @@
 ﻿using System.Net;
 using Newtonsoft.Json;
+using Vostok.Logging.Abstractions;
 
 namespace WeatherBot.Domain.Weather.Helpers;
 
-public class WebHelper
+public static class WebHelper
 {
-    public static T? MakeRequest<T>(string url)
+    public static T? MakeRequest<T>(string url, ILog log)
     {
-        var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
-        var httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-
-        string response;
-        using (var streamReader = new StreamReader(httpWebResponse.GetResponseStream()))
+        try
         {
-            response = streamReader.ReadToEnd();
-        }
+            var httpWebRequest = (HttpWebRequest) WebRequest.Create(url);
+            var httpWebResponse = (HttpWebResponse) httpWebRequest.GetResponse();
 
-        return JsonConvert.DeserializeObject<T>(response);
+            string response;
+            using (var streamReader = new StreamReader(httpWebResponse.GetResponseStream()))
+            {
+                response = streamReader.ReadToEnd();
+            }
+
+            return JsonConvert.DeserializeObject<T>(response);
+        }
+        catch (Exception exception)
+        {
+            log.Error(exception);
+            return default;
+        }
     }
 }

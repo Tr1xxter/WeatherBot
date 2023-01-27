@@ -19,9 +19,9 @@ public class WeatherService
     public WeatherApiResponse? GetCityWeather(string cityName = "Yekaterinburg")
     {
         var coordinatesUrl = GetCoordinatesUrl(cityName);
-        var coordinatesRequest = WebHelper.MakeRequest<List<CityCoordinates>>(coordinatesUrl);
+        var coordinatesRequest = WebHelper.MakeRequest<List<CityCoordinates>>(coordinatesUrl, _log);
 
-        if (coordinatesRequest?.Count == default)
+        if (coordinatesRequest == default || coordinatesRequest.Count == 0)
         {
             _log.Error("Не удалось получить координаты города");
             return null;
@@ -29,11 +29,11 @@ public class WeatherService
 
         var cityCoordinates = coordinatesRequest.First();
         var weatherUrl = GetWeatherUrl(cityCoordinates.Latitude, cityCoordinates.Longitude);
-        return WebHelper.MakeRequest<WeatherApiResponse>(weatherUrl);
+        return WebHelper.MakeRequest<WeatherApiResponse>(weatherUrl, _log);
     }
 
     public WeatherApiResponse? GetCityWeatherByCoordinates(float latitude, float longitude)
-        => WebHelper.MakeRequest<WeatherApiResponse>(GetWeatherUrl(latitude, longitude));
+        => WebHelper.MakeRequest<WeatherApiResponse>(GetWeatherUrl(latitude, longitude), _log);
 
     private string GetCoordinatesUrl(string cityName, int limit = 1)
         => $"http://api.openweathermap.org/geo/1.0/direct?q={cityName}," +

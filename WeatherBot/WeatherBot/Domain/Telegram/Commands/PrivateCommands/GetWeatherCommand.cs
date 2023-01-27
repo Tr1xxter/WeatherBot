@@ -10,7 +10,9 @@ namespace WeatherBot.Domain.Telegram.Commands.PrivateCommands;
 public class GetWeatherCommand : IBotCommand
 {
     public string Name => TelegramTextHelper.Commands.GetWeather;
-    public string Help => "Сообщает текущую погоду в указанном городе России. По умолчанию город - Екатеринбург";
+
+    public string Help => "Сообщает текущую погоду в указанном городе" +
+                          " (указывать через пробел: \"/get_weather Москва\"). По умолчанию город - Екатеринбург";
 
     private readonly TelegramBotClient _telegramBotClient;
     private readonly WeatherService _weatherService;

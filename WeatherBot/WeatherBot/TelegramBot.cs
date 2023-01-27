@@ -65,9 +65,7 @@ namespace WeatherBot
 
             await UpdateBotCommandsMenu();
 
-#if DEBUG
             await Task.Delay(-1, cancellationTokenSource.Token);
-#endif
         }
 
         private async Task UpdateBotCommandsMenu()
@@ -140,7 +138,7 @@ namespace WeatherBot
             {
                 ApiRequestException apiRequestException
                     => $"Telegram API Error: [{apiRequestException.ErrorCode}] {apiRequestException.Message}",
-                _ => exception.Message,
+                _ => exception.ToString(),
             };
 
             _log.Error(errorMessage);
