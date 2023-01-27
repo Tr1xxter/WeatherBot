@@ -38,6 +38,7 @@ public static class BotContainerBuilder
         containerBuilder.RegisterAssemblyTypes(currentAssembly).As<IBotCommand>();
 
         containerBuilder.RegisterType<PrivateCommandManager>();
+        containerBuilder.RegisterType<LocationManager>();
         containerBuilder.RegisterType<WeatherService>();
 
         containerBuilder.RegisterType<TelegramBot>().SingleInstance();

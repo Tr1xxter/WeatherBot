@@ -37,7 +37,8 @@ public class GetWeatherCommand : IBotCommand
         await _telegramBotClient.SendTextMessage(
             chatId: message.Chat.Id,
             text: text,
-            parseMode: ParseMode.Markdown
+            parseMode: ParseMode.Markdown,
+            replyMarkup: KeyboardMarkupHelper.Remove
         );
     }
 }

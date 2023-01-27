@@ -31,6 +31,9 @@ public class WeatherService
         return WebHelper.MakeRequest<WeatherApiResponse>(weatherUrl);
     }
 
+    public WeatherApiResponse GetCityWeatherByCoordinates(float latitude, float longitude)
+        => MakeRequest<WeatherApiResponse>(GetWeatherUrl(latitude, longitude));
+
     private string GetCoordinatesUrl(string cityName, int limit = 1)
         => $"http://api.openweathermap.org/geo/1.0/direct?q={cityName}," +
            $"{WeatherHelper.CountryCode.Russia}&limit={limit}&appid={_secretsConfig.WeatherApiKey}";

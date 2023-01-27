@@ -18,6 +18,7 @@ namespace WeatherBot
         private readonly SecretsConfig _secretsConfig;
         private readonly TelegramBotClient _telegramBotClient;
         private readonly PrivateCommandManager _privateCommandManager;
+        private readonly LocationManager _locationManager;
         private readonly IEnumerable<IBotCommand> _botCommands;
 
         public TelegramBot(
@@ -25,13 +26,15 @@ namespace WeatherBot
             SecretsConfig secretsConfig,
             TelegramBotClient telegramBotClient,
             PrivateCommandManager privateCommandManager,
-            IEnumerable<IBotCommand> botCommands)
+            IEnumerable<IBotCommand> botCommands,
+            LocationManager locationManager)
         {
             _log = log;
             _secretsConfig = secretsConfig;
             _telegramBotClient = telegramBotClient;
             _privateCommandManager = privateCommandManager;
             _botCommands = botCommands;
+            _locationManager = locationManager;
         }
 
         public async Task Start()
@@ -119,6 +122,9 @@ namespace WeatherBot
         private async Task HandleReceivedMessage(Message message, User bot)
         {
             var messageText = message.Text;
+
+            if (message.Location != null)
+                await _locationManager.TryHandleLocation(message);
 
             if (string.IsNullOrWhiteSpace(messageText))
                 return;
