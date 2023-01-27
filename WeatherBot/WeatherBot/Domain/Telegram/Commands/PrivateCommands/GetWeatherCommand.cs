@@ -10,7 +10,7 @@ namespace WeatherBot.Domain.Telegram.Commands.PrivateCommands;
 public class GetWeatherCommand : IBotCommand
 {
     public string Name => TelegramTextHelper.Commands.GetWeather;
-    public string Help => "Сообщает текущую погоду в указанном городе России. По умолчанию город - Екатринбург";
+    public string Help => "Сообщает текущую погоду в указанном городе России. По умолчанию город - Екатеринбург";
 
     private readonly TelegramBotClient _telegramBotClient;
     private readonly WeatherService _weatherService;
@@ -24,10 +24,16 @@ public class GetWeatherCommand : IBotCommand
     public async Task ExecuteAsync(Message message, string[] args)
     {
         var cityName = "Екатеринбург";
-        if (args.Length != 0) cityName = args.Aggregate((current, arg) => current + " " + arg);
+
+        if (args.Length != 0)
+            cityName = args.Aggregate((current, arg) => current + " " + arg);
+
         var cityWeather = _weatherService.GetCityWeather(cityName);
         var text = "Простите, мы не знаем такого города";
-        if (cityWeather != default) text = WeatherHelper.GetWeatherApiResponseString(cityWeather);
+
+        if (cityWeather != default)
+            text = WeatherHelper.GetWeatherApiResponseString(cityWeather);
+
         await _telegramBotClient.SendTextMessage(
             chatId: message.Chat.Id,
             text: text,
