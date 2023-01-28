@@ -122,14 +122,22 @@ namespace WeatherBot.Domain.Telegram.Bots
             var messageText = message.Text;
 
             if (message.Location != null)
+            {
+                LogReceivedInformation(message, bot, "локацию");
                 await _locationManager.TryHandleLocation(message);
+            }
 
             if (string.IsNullOrWhiteSpace(messageText))
                 return;
 
-            _log.Info($"Бот [@{bot.Username}] получил сообщение [{messageText}] в чате с [{message.From.Username}].");
+            LogReceivedInformation(message, bot, $"сообщение [{messageText}]");
 
             await _privateCommandManager.TryPerformCommand(message);
+        }
+
+        private void LogReceivedInformation(Message message, User bot, string information)
+        {
+            _log.Info($"Бот [@{bot.Username}] получил {information} в чате с [{message.From.Username}].");
         }
 
         private Task HandleApiError(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
