@@ -8,6 +8,7 @@ using Vostok.Logging.Console;
 using Vostok.Logging.File;
 using Vostok.Logging.File.Configuration;
 using WeatherBot.Configuration;
+using WeatherBot.Domain.Telegram.Bots;
 using WeatherBot.Domain.Telegram.Clients;
 using WeatherBot.Domain.Telegram.Commands.Managers;
 using WeatherBot.Domain.Telegram.Commands.PrivateCommands;

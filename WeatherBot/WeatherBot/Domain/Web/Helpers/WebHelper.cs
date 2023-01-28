@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Vostok.Logging.Abstractions;
 
-namespace WeatherBot.Domain.Weather.Helpers;
+namespace WeatherBot.Domain.Web.Helpers;
 
 public static class WebHelper
 {

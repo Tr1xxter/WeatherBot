@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using WeatherBot.DI;
+using WeatherBot.Domain.Telegram.Bots;
 
 namespace WeatherBot;
 

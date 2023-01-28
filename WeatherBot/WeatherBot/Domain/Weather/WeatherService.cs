@@ -2,6 +2,7 @@
 using WeatherBot.Configuration;
 using WeatherBot.Domain.Weather.Helpers;
 using WeatherBot.Domain.Weather.Models;
+using WeatherBot.Domain.Web.Helpers;
 
 namespace WeatherBot.Domain.Weather;
 

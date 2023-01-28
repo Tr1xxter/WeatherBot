@@ -10,7 +10,7 @@ using WeatherBot.Domain.Telegram.Commands.PrivateCommands;
 using WeatherBot.Domain.Telegram.Helpers;
 using TelegramBotClient = WeatherBot.Domain.Telegram.Clients.TelegramBotClient;
 
-namespace WeatherBot
+namespace WeatherBot.Domain.Telegram.Bots
 {
     public class TelegramBot
     {
