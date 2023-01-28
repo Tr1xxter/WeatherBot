@@ -6,11 +6,11 @@ namespace WeatherBot.Domain.Web.Helpers;
 
 public static class WebHelper
 {
-    public static T? MakeRequest<T>(string url, ILog log)
+    public static T? MakeRequest<T>(string uri, ILog log)
     {
         try
         {
-            var httpWebRequest = (HttpWebRequest) WebRequest.Create(url);
+            var httpWebRequest = (HttpWebRequest) WebRequest.Create(uri);
             var httpWebResponse = (HttpWebResponse) httpWebRequest.GetResponse();
 
             string response;

@@ -19,8 +19,8 @@ public class WeatherService
 
     public WeatherApiResponse? GetCityWeather(string cityName = "Yekaterinburg")
     {
-        var coordinatesUrl = GetCoordinatesUrl(cityName);
-        var coordinatesRequest = WebHelper.MakeRequest<List<CityCoordinates>>(coordinatesUrl, _log);
+        var coordinatesUri = GetCoordinatesUri(cityName);
+        var coordinatesRequest = WebHelper.MakeRequest<List<CityCoordinates>>(coordinatesUri, _log);
 
         if (coordinatesRequest == default || coordinatesRequest.Count == 0)
         {
@@ -29,18 +29,18 @@ public class WeatherService
         }
 
         var cityCoordinates = coordinatesRequest.First();
-        var weatherUrl = GetWeatherUrl(cityCoordinates.Latitude, cityCoordinates.Longitude);
-        return WebHelper.MakeRequest<WeatherApiResponse>(weatherUrl, _log);
+        var weatherUri = GetWeatherUri(cityCoordinates.Latitude, cityCoordinates.Longitude);
+        return WebHelper.MakeRequest<WeatherApiResponse>(weatherUri, _log);
     }
 
     public WeatherApiResponse? GetCityWeatherByCoordinates(float latitude, float longitude)
-        => WebHelper.MakeRequest<WeatherApiResponse>(GetWeatherUrl(latitude, longitude), _log);
+        => WebHelper.MakeRequest<WeatherApiResponse>(GetWeatherUri(latitude, longitude), _log);
 
-    private string GetCoordinatesUrl(string cityName, int limit = 1)
+    private string GetCoordinatesUri(string cityName, int limit = 1)
         => $"http://api.openweathermap.org/geo/1.0/direct?q={cityName}," +
            $"{WeatherHelper.CountryCode.Russia}&limit={limit}&appid={_secretsConfig.WeatherApiKey}";
 
-    private string GetWeatherUrl(float latitude, float longitude)
+    private string GetWeatherUri(float latitude, float longitude)
         => $"https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}" +
            $"&appid={_secretsConfig.WeatherApiKey}&lang=ru&units=metric";
 }
