@@ -18,7 +18,7 @@ public static class WeatherHelper
             cityName = "Екатеринбург";
 
         return $"Погода в городе {cityName}: {weatherApiResponse.WeatherInfo.Description}, " +
-               $"температура {(int) weatherApiResponse.Main.Temp}, " +
-               $"ощущается как {(int) weatherApiResponse.Main.FeelsLike}";
+               $"температура {(int) weatherApiResponse.Main.Temp}°C, " +
+               $"ощущается как {(int) weatherApiResponse.Main.FeelsLike}°C";
     }
 }
